@@ -22,7 +22,7 @@ Problem z testami UI jest taki, że są:
 Co, jednak jeśli jest możliwość przetestowania unitowo legacy kodu? Postaram się pokazać jakie wyzwania czekają przed nami
 w testowaniu legacy i jakie mamy w naszym PHP-owym arsenale narzędzia, które mogą pomóc te problemy obejść.
 
-##Uwaga! Poniższe przykłady i narzędzia pokazują jak radzić sobie z testowaniem już istniejącego legacy. Nie oznacza to, że można pisać teraz taki kod, trzymajmy się dobrych praktyk i twórzmy testowalny kod.
+## Uwaga! Poniższe przykłady i narzędzia pokazują jak radzić sobie z testowaniem już istniejącego legacy. Nie oznacza to, że można pisać teraz taki kod, trzymajmy się dobrych praktyk i twórzmy testowalny kod.
 
 ### Założenia
 
