@@ -1,4 +1,4 @@
-##Problem
+## Problem
 
 Dostaliśmy w "spadku" legacy codebase. Takie legacy z piekła rodem. Klasy po 10k linii,
 zależności przez ```new```, odwołania do złozonych statycznych metod, pomieszanie logiki domenowej z sql i http.
@@ -7,7 +7,7 @@ Widzieliśmy wszyscy nie raz takie twory i nie raz musieliśmy z nimi pracować.
 Tak długo jak nie musimy dotykać legacy wszystko jest dobrze. To sobie jakoś działa, nikt nie wie jak i dlaczego ale działa. Zarabia pieniądze.
 
 Przychodzi jednak czas gdy ktoś chce abyśmy zmienili coś w logice legacy. Dramat maluje sie natwarzy. 
-Co Teraz? Dołozyć kolejnego ```ifa``` gdzieś na szczycie tego dziesięcio tysięcznika i modlić się ze zadziała. 
+Co Teraz? Dołozyć kolejny ```if``` gdzieś na szczycie tego dziesięcio tysięcznika i modlić się ze zadziała. 
 
 A może przepisać? 
 
@@ -24,7 +24,7 @@ w testowaniu legacy i jakie mamy w naszym PHP-owym arsenale narzędzia które mo
 
 ##Uwaga! Poniższe przykłady i narzędzia pokazują jak radzić sobie z testowaniem już istniejącego legacy. Nie oznacza to że można pisać teraz taki kod, trzymajmy się dobrych praktyk i twórzmy testowalny kod.
 
-###Założenia
+### Założenia
 
 Wszystko ma działać w "czystym" PHP. Żadnych extensions, runkitów, tylko zależności PHP-owe
 
@@ -113,13 +113,15 @@ Jeśli interesuje nas tylko to czy funkcja została wywołana i nie ma potrzeby 
        
  ```
 
-####Ograniczenia
+#### Ograniczenia
 
 Nie działa dla funkcji wywyłanych z explicit globalnym namespace np:
 
-```\microtime()```
+```
+\microtime()
+```
 
-###2. Metody statyczne
+### 2. Metody statyczne
 
 Co jesli w kodzie mamy wywołania staticów które np: strzelającą do bazy? Pomóc nam może [Mockery](http://docs.mockery.io/en/latest/reference/instance_mocking.html?highlight=alias) z funkcjonalnością 'alias'
 
@@ -183,13 +185,13 @@ class StaticExampleTest extends TestCase
     }
 }
 ```
-####Ograniczenia
+#### Ograniczenia
 
 Raz aliasowana metoda niemoże zostać zredefiniowana ani przywrócona do pierwotnej postaci w tym samym procesie. Jeśli mamy x testów,
 gdzie każdy test mockuje ta samą metodę ale w inny sposób (np: ma zwracać inna wartość) to musimy uruchomić testy w osobnych procesach, co negatywnie odbije się na czasie wykonania suitu testów jednostkowych.
 
 
-###3. I don't want do die()
+### 3. I don't want do die()
 
 Co jeśli w kodzie mamy np: die()?
 Pomóc może [Patchwork](http://patchwork2.org/) - biblioteka do monkey patchingu.
@@ -256,13 +258,13 @@ Jak poradzić sobie z tym korzystając z patchwork? Monkey patching pozwala nam 
 
 Podmieniamy w kodzie na die na exception, który z kolej mozemy przechwycic w teście i sprawdzić jego typ oraz wiadomość.
 
-####Ograniczenia
+#### Ograniczenia
 
 * Nadpisywane funkcje / metody muszą być z góry określone w pliku patchwork.json
 * Biblioteka ma pewne ograniczenia, nie można nadpisać np: statycznych metod PDO, nie można tez nadpisac ``new`` (nad tym ostatnim trwają prace)
 * Problemy wydajnosciowe
 
-###4. Broń ostateczna
+### 4. Broń ostateczna
 
 Gdy mamy do czynienia z paskudnym legacy gdzie pełno jest staticów, new, die, exit oraz innych rzeczy skutecznie uniemożliwiających nam testowanie jednostkowe, pomoć może tylko [Kahlan](https://github.com/kahlan/kahlan)
 
@@ -343,7 +345,7 @@ Możemy też m.in przechwycić `echo`. Zwróćmy uwagę też że w testowanym ko
  bezpośrednio w kod za pomocą monkey patching. Kahlan ma praktycznie nie ograniczone możliwości jeśli w testowaniu kodu PHP. Co więcej nie musi
 służyć tylko i wyłącznie jako narządzie do testowani legacy. Można go z powodzeniem wykorzystać jako alternatywę dla PHPUnit.
 
-####Ograniczenia
+#### Ograniczenia
 * Nowy framework, nie kompatybilny z PHPUnit. Wymaga czasu na jego nauczenie się.
 
 
