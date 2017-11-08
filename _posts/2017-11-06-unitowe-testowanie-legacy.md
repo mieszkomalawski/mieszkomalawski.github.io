@@ -1,38 +1,38 @@
 ## Problem
 
-Dostaliśmy w "spadku" legacy codebase. Takie legacy z piekła rodem. Klasy po 10k linii,
-zależności przez ```new```, odwołania do złozonych statycznych metod, pomieszanie logiki domenowej z sql i http.
-Widzieliśmy wszyscy nie raz takie twory i nie raz musieliśmy z nimi pracować. Są częścią naszej rzeczywistości, czy to nam sie podoba czy nie.
+Dostaliśmy w „spadku” legacy codebase. Takie legacy z piekła rodem. Klasy po 10k linii,
+zależności przez '''new''', odwołania do złożonych statycznych metod, pomieszanie logiki domenowej z sql i http.
+Widzieliśmy wszyscy nie raz takie twory i nie raz musieliśmy z nimi pracować. Są częścią naszej rzeczywistości, czy to nam się podoba, czy nie.
  
-Tak długo jak nie musimy dotykać legacy wszystko jest dobrze. To sobie jakoś działa, nikt nie wie jak i dlaczego ale działa. Zarabia pieniądze.
+Tak długo, jak nie musimy dotykać legacy wszystko jest dobrze. To sobie jakoś działa, nikt nie wie, jak i dlaczego, ale działa. Zarabia pieniądze.
 
-Przychodzi jednak czas gdy ktoś chce abyśmy zmienili coś w logice legacy. Dramat maluje sie natwarzy. 
-Co Teraz? Dołozyć kolejny ```if``` gdzieś na szczycie tego dziesięcio tysięcznika i modlić się ze zadziała. 
+Przychodzi jednak czas, gdy ktoś chce, abyśmy zmienili coś w logice legacy. Dramat maluje się na twarzy.
+Co Teraz? Dołożyć kolejny '''if''' gdzieś na szczycie tego dziesięcio tysiącznika i modlić się że zadziała.
 
-A może przepisać? 
+A może przepisać?
 
-Oczywisty problem z legacy jest taki że nie ma ono testów i jest nie testowalne unitowo. Nie możemy nic refaktoryzować bo nie mamy testów,
-nie mamy testów bo trzeba by najpierw zrefaktoryzować kod do 'testowalnej' postaci. Wpadmy w pętlę. Co nam pozostaje? "Refactor and pray"? Refaktoryzować i modlić się że nic nie popsuliśmy i następnie napisać testy do nowego pięknego kod?
+Oczywisty problem z legacy jest taki, że nie ma ono testów i jest nie testowalne unitowo. Nie możemy nic refaktoryzować, bo nie mamy testów,
+nie mamy testów, bo trzeba by najpierw refaktoryzować kod do 'testowalnej' postaci. Wpadamy w pętlę. Co nam pozostaje? „Refactor and pray"? Refaktoryzować i modlić się, że nic nie popsuliśmy i następnie napisać testy do nowego pięknego kod?
 
-Oczywiście zawsze możemy napisać testy funkcjonalne np: w codeception które bedą testować nasza aplikację przez UI.
-Problem z testami UI jest taki że są:
-* Wolne, nie możemy mieć ich zatem zbyt wielu, a co za tym idzie nie pokryjemy wszystkich przypadków, najwyżej kilka najważniejszych
-* Nie zawsze wykonalne. Nie możemy ( i nie powinniśmy ) w takich testach nic mockować np: bramki płatności, czasem może być to ograniczeniem
- 
-Co jednak jeśli jest możliwość przetestowania unitowo legacy kodu? Postaram sie pokazać jakie wyzwania czekają przed nami
-w testowaniu legacy i jakie mamy w naszym PHP-owym arsenale narzędzia które mogą pomóc te problemy obejść.
+Oczywiście zawsze możemy napisać testy funkcjonalne np.: w codeception które będą testować naszą aplikację przez UI.
+Problem z testami UI jest taki, że są:
+* Wolne, nie możemy mieć ich zatem zbyt wielu, a co za tym idzie, nie pokryjemy wszystkich przypadków, najwyżej kilka najważniejszych
+* Nie zawsze wykonalne. Nie możemy (i nie powinniśmy) w takich testach nic mockować np.: bramki płatności, czasem może być to ograniczeniem.
 
-##Uwaga! Poniższe przykłady i narzędzia pokazują jak radzić sobie z testowaniem już istniejącego legacy. Nie oznacza to że można pisać teraz taki kod, trzymajmy się dobrych praktyk i twórzmy testowalny kod.
+Co, jednak jeśli jest możliwość przetestowania unitowo legacy kodu? Postaram się pokazać jakie wyzwania czekają przed nami
+w testowaniu legacy i jakie mamy w naszym PHP-owym arsenale narzędzia, które mogą pomóc te problemy obejść.
+
+##Uwaga! Poniższe przykłady i narzędzia pokazują jak radzić sobie z testowaniem już istniejącego legacy. Nie oznacza to, że można pisać teraz taki kod, trzymajmy się dobrych praktyk i twórzmy testowalny kod.
 
 ### Założenia
 
-Wszystko ma działać w "czystym" PHP. Żadnych extensions, runkitów, tylko zależności PHP-owe
+Wszystko ma działać w „czystym” PHP. Żadnych extensions, runkitów, tylko zależności PHP-owe
 
 ### 1. Wbudowane funkcje php
 
-PHP nie jest językiem w pełni obiektowym. Jeśli mamy w kodzie wywyołania natywnych funkcji PHP, nie mamy możliwości sterowania ich działaniem.
+PHP nie jest językiem w pełni obiektowym. Jeśli mamy w kodzie wywołania natywnych funkcji PHP, nie mamy możliwości sterowania ich działaniem.
 
-Niech będzie sobie klasa Profiler która ma za zadanie zmierzyć czas wykonanania kodu:
+Niech będzie sobie klasa Profiler, która ma za zadanie zmierzyć czas wykonania kodu:
 
 ```
 <?php
@@ -57,12 +57,12 @@ class Profiler
 
 ```
 
-Nie możemy sterować tym co zwraca microtime, nie możemy więc okreslić co metoda ma zwrócić.
-Rozwiąnie? Można oczywiście wrapować microtime w jakaś klasę helpera i ją wstrzyknać, ale takie rozwiązanie to:
+Nie możemy sterować tym, co zwraca microtime, nie możemy więc określić co metoda ma zwrócić.
+Rozwianie? Można oczywiście wrapować microtime w jakąś klasę helpera i ją wstrzyknąć, ale takie rozwiązanie to:
 * Dodatkowy narzut pracy
-* W legacy może być nie możliwe (brak DI)
+* W legacy może być niemożliwe (brak DI)
 
-Co więc możemy zrobić? Z pomoca przychodzi [PHPMock](https://github.com/php-mock/php-mock)
+Co więc możemy zrobić? Z pomocą przychodzi [PHPMock](https://github.com/php-mock/php-mock)
 
 Nasz test mógłby wyglądać tak:
 
@@ -87,11 +87,11 @@ Nasz test mógłby wyglądać tak:
       }
 ```
 
-Co tu mamy? Mockujemy wbudowaną funkcję microtime. Dzięki temu możemy dokładnie określić co powinna zwrócić metoda.
+Co tu mamy? Mockujemy wbudowaną funkcję microtime. Dzięki temu możemy dokładnie określić, co powinna zwrócić metoda.
 
 Jak to się dzieje? Namespace fallback, gdy wywołujemy microtime, PHP najpierw szuka takiej funkcji w bierzącym namespace.
 
-Jeśli interesuje nas tylko to czy funkcja została wywołana i nie ma potrzeby sterować zwracaną wartością, możemy stworzyć "spy":
+Jeśli interesuje nas tylko to czy funkcja została wywołana i nie ma potrzeby sterować zwracaną wartością, możemy stworzyć „spy”:
 
 ```
    /**
@@ -115,7 +115,7 @@ Jeśli interesuje nas tylko to czy funkcja została wywołana i nie ma potrzeby 
 
 #### Ograniczenia
 
-Nie działa dla funkcji wywyłanych z explicit globalnym namespace np:
+Nie działa dla funkcji wywołanych z explicit globalnym namespace np.:
 
 ```
 \microtime()
@@ -123,9 +123,9 @@ Nie działa dla funkcji wywyłanych z explicit globalnym namespace np:
 
 ### 2. Metody statyczne
 
-Co jesli w kodzie mamy wywołania staticów które np: strzelającą do bazy? Pomóc nam może [Mockery](http://docs.mockery.io/en/latest/reference/instance_mocking.html?highlight=alias) z funkcjonalnością 'alias'
+Co jeśli w kodzie mamy wywołania staticów, które np.: strzelającą do bazy? Pomóc nam może [Mockery](http://docs.mockery.io/en/latest/reference/instance_mocking.html?highlight=alias) z funkcjonalnością 'alias'
 
-Niech będzie sobie klasa 
+Niech będzie sobie klasa:
 
 ```
 <?php
@@ -151,8 +151,8 @@ Niech będzie sobie klasa
    }
 ```
  
-Chcemy przetestować logikę znajdującą się w metodzie, niestety jest ona zależna do zwrotki ze statycznej metody getAll.
-Jak może nam tutaj pomóc mockery? 
+Chcemy przetestować logikę znajdującą się w metodzie, niestety jest ona zależna od zwrotki ze statycznej metody getAll.
+Jak może nam tutaj pomóc mockery?
 
 ```
 <?php
@@ -187,15 +187,14 @@ class StaticExampleTest extends TestCase
 ```
 #### Ograniczenia
 
-Raz aliasowana metoda niemoże zostać zredefiniowana ani przywrócona do pierwotnej postaci w tym samym procesie. Jeśli mamy x testów,
-gdzie każdy test mockuje ta samą metodę ale w inny sposób (np: ma zwracać inna wartość) to musimy uruchomić testy w osobnych procesach, co negatywnie odbije się na czasie wykonania suitu testów jednostkowych.
-
+Raz aliasowana metoda nie może zostać zredefiniowana ani przywrócona do pierwotnej postaci w tym samym procesie. Jeśli mamy x testów,
+gdzie każdy test mockuje ta samą metodę, ale w inny sposób (np.: ma zwracać inna wartość) to musimy uruchomić testy w osobnych procesach, co negatywnie odbije się na czasie wykonania suitu testów jednostkowych.
 
 ### 3. I don't want do die()
 
-Co jeśli w kodzie mamy np: die()?
+Co, jeśli w kodzie mamy np.: die()?
 Pomóc może [Patchwork](http://patchwork2.org/) - biblioteka do monkey patchingu.
-Pozwala nie tylko na redefinicję metod statycznych, ale także metod prywatnych i wbudowanych funkcji oraz konstruktów PHP. 
+Pozwala nie tylko na redefinicję metod statycznych, ale także metod prywatnych i wbudowanych funkcji oraz konstruktów PHP.
 
 Przykładowa klasa testowana:
 
@@ -234,7 +233,7 @@ class LegacyClass
 }
 ```
 
-Chcemy sprawdzić np: czy pierwszy guard zadział i przerwał działa metody. Niestety die() przerwie tez wykonanie naszego testu.
+Chcemy sprawdzić np.: czy pierwszy guard zadział i przerwał działanie metody. Niestety die() przerwie też wykonanie naszego testu.
 Jak poradzić sobie z tym korzystając z patchwork? Monkey patching pozwala nam redefiniować dowolną linię w kodzie:
 
 ```
@@ -256,17 +255,17 @@ Jak poradzić sobie z tym korzystając z patchwork? Monkey patching pozwala nam 
     }
 ```
 
-Podmieniamy w kodzie na die na exception, który z kolej mozemy przechwycic w teście i sprawdzić jego typ oraz wiadomość.
+Podmieniamy w kodzie die na exception, który z kolej możemy przechwycić w teście i sprawdzić jego typ oraz wiadomość.
 
 #### Ograniczenia
 
 * Nadpisywane funkcje / metody muszą być z góry określone w pliku patchwork.json
-* Biblioteka ma pewne ograniczenia, nie można nadpisać np: statycznych metod PDO, nie można tez nadpisac ``new`` (nad tym ostatnim trwają prace)
-* Problemy wydajnosciowe
+* Biblioteka ma pewne ograniczenia, nie można nadpisać np.: statycznych metod PDO, nie można też nadpisać ''new'' (nad tym ostatnim trwają prace)
+* Problemy wydajnosciowe.
 
-### 4. Broń ostateczna
+### 4. Broń ostateczna.
 
-Gdy mamy do czynienia z paskudnym legacy gdzie pełno jest staticów, new, die, exit oraz innych rzeczy skutecznie uniemożliwiających nam testowanie jednostkowe, pomoć może tylko [Kahlan](https://github.com/kahlan/kahlan)
+Gdy mamy do czynienia z paskudnym legacy gdzie pełno jest staticów, new, die, exit oraz innych rzeczy skutecznie uniemożliwiających nam testowanie jednostkowe, pomóc może tylko [Kahlan](https://github.com/kahlan/kahlan)
 
 W przeciwieństwie do ww. Kahlan jest osobnym frameworkiem, tak więc nie możemy go użyć z poziomu PHPUnit-a. Kahlan, podobnie jak patchwork, wykorzystuje monkey patching.
 Zobaczymy jak to działa w praktyce. Wrócmy do naszej legacy klasy:
@@ -299,9 +298,8 @@ class LegacyClass
 }
 ```
 
-Kahlan oferuje nam tzw. describe-it syntax. Oprócz standardowych dla frameworka testowego funckjonalności takich jak assercje i stuby/mocki, mamy też możliwość monkey patchingu (bez potrzeby definiowania patchowanych funkcji jak w przypadku patchwork)
+Kahlan oferuje nam tzw. describe-it syntax. Oprócz standardowych dla frameworka testowego funkcjonalności takich jak assercje i stuby/mocki, mamy też możliwość monkey patchingu (bez potrzeby definiowania patchowanych funkcji jak w przypadku patchwork)
 Przykładowy test:
-
 ```
 <?php
 
@@ -341,12 +339,16 @@ describe('Legacy class', function () {
 ```
 
 Obiekt Quit pozwala na nadspisywanie die() i exit(), zamiast skończyć skrypt, poleci wyjątek.
-Możemy też m.in przechwycić `echo`. Zwróćmy uwagę też że w testowanym kodzie było `new`, Kahlan pozwala nam na wstawienie mocka
- bezpośrednio w kod za pomocą monkey patching. Kahlan ma praktycznie nie ograniczone możliwości jeśli w testowaniu kodu PHP. Co więcej nie musi
+Możemy też m.in. przechwycić 'echo'. Zwróćmy uwagę też, że w testowanym kodzie było 'new', Kahlan pozwala nam na wstawienie mocka
+bezpośrednio w kod za pomocą monkey patching. Kahlan ma praktycznie nie ograniczone możliwości w testowaniu kodu PHP. Co więcej, nie musi
 służyć tylko i wyłącznie jako narządzie do testowani legacy. Można go z powodzeniem wykorzystać jako alternatywę dla PHPUnit.
 
 #### Ograniczenia
-* Nowy framework, nie kompatybilny z PHPUnit. Wymaga czasu na jego nauczenie się.
+* Nowy framework, niekompatybilny z PHPUnit. Wymaga czasu na jego nauczenie się.
+
+### Kod
+
+Kod dostępny pod https://github.com/mieszkomalawski/legacy-unit
 
 
 
