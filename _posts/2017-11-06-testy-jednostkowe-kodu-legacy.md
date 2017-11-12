@@ -346,6 +346,16 @@ służyć tylko i wyłącznie jako narządzie do testowani legacy. Można go z p
 #### Ograniczenia
 * Nowy framework, niekompatybilny z PHPUnit. Wymaga czasu na jego nauczenie się.
 
+### Słowo na koniec
+
+Mamy do dyspozycji narzędzia. Czy i kiedy powinniśmy ich używać? Jak zwykle „to zależy". Zależy od naszego projektu, naszej mocy przerobowej i naszych potrzeb. Należy pamietać, że narzędzie te mają swoje ograniczenia i należy ich używać rozsądnie.
+
+Jako że w tytule bloga są suchary, tak więc na zakończenie:
+
+What's the second movie about a database engineer called?
+
+The SQL.
+
 ### Kod
 
 Kod dostępny pod https://github.com/mieszkomalawski/legacy-unit
