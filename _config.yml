@@ -13,7 +13,7 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title: Najpierw Le cafe, potem PHP. Programowanie, suchary i kawa
+title: Najpierw cafe, potem PHP. Programowanie, suchary i kawa
 email:
 description: > # this means to ignore newlines until "baseurl:"
   Ideas, solutions, random stuff
